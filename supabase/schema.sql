@@ -128,3 +128,13 @@ ALTER PUBLICATION supabase_realtime ADD TABLE "ProductionOrder";
 INSERT INTO "User" (id, role, email, full_name)
 VALUES ('00000000-0000-0000-0000-000000000000', 'admin', 'tomyalkethiri@gmail.com', 'مدير النظام')
 ON CONFLICT (id) DO UPDATE SET role = 'admin', email = 'tomyalkethiri@gmail.com';
+
+-- Create SyncLog table for operations tracking
+CREATE TABLE IF NOT EXISTS "SyncLog" (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    action TEXT NOT NULL CHECK (action IN ('sync', 'export')),
+    status TEXT NOT NULL CHECK (status IN ('success', 'failed')),
+    summary TEXT,
+    error_details TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);

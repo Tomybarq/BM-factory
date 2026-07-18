@@ -84,17 +84,19 @@ Deno.serve(async (req) => {
     });
   }
 
-  try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const googleCredsStr = Deno.env.get('GOOGLE_SERVICE_ACCOUNT_JSON');
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+  try {
+    const googleCredsStr = Deno.env.get('GOOGLE_SERVICE_ACCOUNT_JSON');
     if (!googleCredsStr) {
-      return Response.json({ error: 'لم يتم ضبط حساب الخدمة لجوجل (GOOGLE_SERVICE_ACCOUNT_JSON) في متغيرات البيئة' }, { status: 400 });
+      const errMessage = 'لم يتم ضبط حساب الخدمة لجوجل (GOOGLE_SERVICE_ACCOUNT_JSON) في متغيرات البيئة';
+      await supabase.from('SyncLog').insert({ action: 'export', status: 'failed', error_details: errMessage });
+      return Response.json({ error: errMessage }, { status: 400 });
     }
 
     const googleCreds = JSON.parse(googleCredsStr);
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Fetch sheets config
     const { data: configs, error: configErr } = await supabase
@@ -106,7 +108,9 @@ Deno.serve(async (req) => {
     const config = configs?.[0];
 
     if (!config || !config.reports_spreadsheet_id) {
-      return Response.json({ error: 'لم يتم ضبط إعدادات جوجل شيتس بعد في قاعدة البيانات' }, { status: 400 });
+      const errMessage = 'لم يتم ضبط إعدادات جوجل شيتس بعد في قاعدة البيانات';
+      await supabase.from('SyncLog').insert({ action: 'export', status: 'failed', error_details: errMessage });
+      return Response.json({ error: errMessage }, { status: 400 });
     }
 
     // Get Calculations (ordered by created_date descending)
@@ -114,7 +118,7 @@ Deno.serve(async (req) => {
       .from('Calculation')
       .select('*')
       .order('created_date', { ascending: false })
-      .limit(1000);
+      .limit(1000); // safety cap limit to prevent out of memory issues
 
     if (calcErr) throw calcErr;
 
@@ -170,8 +174,16 @@ Deno.serve(async (req) => {
 
     if (!writeRes.ok) {
       const err = await writeRes.text();
-      return Response.json({ error: 'فشل تصدير البيانات لجوجل شيت: ' + err }, { status: 502 });
+      await supabase.from('SyncLog').insert({ action: 'export', status: 'failed', error_details: 'فشل التصدير لجوجل شيت: ' + err });
+      return Response.json({ error: 'فشل التصدير لجوجل شيت: ' + err }, { status: 502 });
     }
+
+    const logSummary = `نجاح التصدير: تم تصدير ${values.length - 1} سجل حسابي إلى شيت التقارير`;
+    await supabase.from('SyncLog').insert({
+      action: 'export',
+      status: 'success',
+      summary: logSummary
+    });
 
     return new Response(JSON.stringify({ exported: values.length - 1 }), {
       headers: {
@@ -181,6 +193,12 @@ Deno.serve(async (req) => {
     });
 
   } catch (error: any) {
+    console.error('Export execution crashed:', error);
+    await supabase.from('SyncLog').insert({
+      action: 'export',
+      status: 'failed',
+      error_details: error.message || 'Unknown crash'
+    });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: {
