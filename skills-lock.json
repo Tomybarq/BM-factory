@@ -12,6 +12,12 @@
       "sourceType": "github",
       "skillPath": "skills/supabase-postgres-best-practices/SKILL.md",
       "computedHash": "768f9a7532780a72165f79c91d71a4bf82abd9ed31045238c2acb40322fc1d0a"
+    },
+    "supabase-server": {
+      "source": "supabase/server",
+      "sourceType": "github",
+      "skillPath": "skills/supabase-server/SKILL.md",
+      "computedHash": "de3068fa3b606fa50a661992ab7e3a8570d310d793b7b8a7e6ddb1a9b716b1a6"
     }
   }
 }
