@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { Plus, Trash2, Package, GripVertical } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { supabase } from "@/api/supabaseClient";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,6 +67,29 @@ export default function ProductionKanban() {
 
   useEffect(() => {
     load();
+
+    // Subscribe to realtime updates on ProductionOrder table
+    const channel = supabase
+      .channel("realtime-production-orders")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "ProductionOrder" },
+        (payload) => {
+          console.log("Realtime order update:", payload);
+          if (payload.eventType === "INSERT") {
+            setOrders((prev) => [payload.new, ...prev]);
+          } else if (payload.eventType === "UPDATE") {
+            setOrders((prev) => prev.map((o) => (o.id === payload.new.id ? payload.new : o)));
+          } else if (payload.eventType === "DELETE") {
+            setOrders((prev) => prev.filter((o) => o.id !== payload.old.id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const ordersByStatus = (status) => orders.filter((o) => o.status === status);
