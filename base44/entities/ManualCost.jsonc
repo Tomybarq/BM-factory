@@ -1,0 +1,19 @@
+{
+  "name": "ManualCost",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "default_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "category": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

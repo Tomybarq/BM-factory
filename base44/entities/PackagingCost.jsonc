@@ -1,0 +1,46 @@
+{
+  "name": "PackagingCost",
+  "type": "object",
+  "properties": {
+    "size": {
+      "type": "string",
+      "enum": [
+        "5 \u0644\u062a\u0631",
+        "2 \u0644\u062a\u0631",
+        "1.5 \u0644\u062a\u0631",
+        "750 \u0645\u0644"
+      ]
+    },
+    "bottle_cost": {
+      "type": "number",
+      "default": 0
+    },
+    "cap_cost": {
+      "type": "number",
+      "default": 0
+    },
+    "label_cost": {
+      "type": "number",
+      "default": 0
+    },
+    "carton_cost": {
+      "type": "number",
+      "default": 0
+    },
+    "operational_cost": {
+      "type": "number",
+      "default": 0
+    },
+    "transportation_cost": {
+      "type": "number",
+      "default": 0
+    },
+    "miscellaneous_cost": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "size"
+  ]
+}

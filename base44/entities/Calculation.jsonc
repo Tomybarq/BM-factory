@@ -1,0 +1,60 @@
+{
+  "name": "Calculation",
+  "type": "object",
+  "properties": {
+    "product_id": {
+      "type": "string"
+    },
+    "product_name": {
+      "type": "string"
+    },
+    "formula_id": {
+      "type": "string"
+    },
+    "packaging_size": {
+      "type": "string"
+    },
+    "volume_liters": {
+      "type": "number"
+    },
+    "raw_material_cost": {
+      "type": "number"
+    },
+    "packaging_cost": {
+      "type": "number"
+    },
+    "manual_cost": {
+      "type": "number"
+    },
+    "total_cost": {
+      "type": "number"
+    },
+    "cost_per_liter": {
+      "type": "number"
+    },
+    "manual_costs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "ingredients_snapshot": {
+      "type": "array"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "product_id",
+    "packaging_size"
+  ]
+}
