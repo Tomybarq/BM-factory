@@ -7,6 +7,7 @@ import {
   Boxes,
   FlaskConical,
   Calculator,
+  KanbanSquare,
   FileBarChart,
   Moon,
   Sun,
@@ -25,6 +26,7 @@ const navItems = [
   { to: "/packaging", label: "تكاليف التعبئة", icon: Package, action: "read" },
   { to: "/products", label: "المنتجات والتركيبات", icon: FlaskConical, action: "read" },
   { to: "/calculator", label: "حاسبة التكلفة", icon: Calculator, action: "read" },
+  { to: "/kanban", label: "طلبات الإنتاج", icon: KanbanSquare, action: "read" },
   { to: "/reports", label: "التقارير", icon: FileBarChart, action: "read" },
 ];
 

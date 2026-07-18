@@ -18,6 +18,7 @@ import RawMaterials from '@/pages/RawMaterials';
 import Packaging from '@/pages/Packaging';
 import Products from '@/pages/Products';
 import CostCalculator from '@/pages/CostCalculator';
+import ProductionKanban from '@/pages/ProductionKanban';
 import Reports from '@/pages/Reports';
 // Add page imports here
 
@@ -58,6 +59,7 @@ const AuthenticatedApp = () => {
           <Route path="/packaging" element={<Packaging />} />
           <Route path="/products" element={<Products />} />
           <Route path="/calculator" element={<CostCalculator />} />
+          <Route path="/kanban" element={<ProductionKanban />} />
           <Route path="/reports" element={<Reports />} />
         </Route>
       </Route>

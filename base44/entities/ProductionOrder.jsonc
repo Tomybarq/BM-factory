@@ -1,0 +1,52 @@
+{
+  "name": "ProductionOrder",
+  "type": "object",
+  "properties": {
+    "order_number": {
+      "type": "string"
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "product_name": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "number",
+      "default": 1
+    },
+    "packaging_size": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "preparing",
+        "packaging",
+        "shipping",
+        "done"
+      ],
+      "default": "preparing"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "product_name",
+    "status"
+  ]
+}
