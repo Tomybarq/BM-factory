@@ -1,0 +1,32 @@
+{
+  "name": "GoogleSheetsConfig",
+  "type": "object",
+  "properties": {
+    "prices_spreadsheet_id": {
+      "type": "string",
+      "description": "\u0645\u0639\u0631\u0651\u0641 \u0645\u0644\u0641 \u062c\u0648\u062c\u0644 \u0634\u064a\u062a \u0644\u0623\u0633\u0639\u0627\u0631 \u0627\u0644\u0645\u0648\u0627\u062f \u0627\u0644\u062e\u0627\u0645"
+    },
+    "prices_sheet_name": {
+      "type": "string",
+      "default": "\u0623\u0633\u0639\u0627\u0631 \u0627\u0644\u0645\u0648\u0627\u062f",
+      "description": "\u0627\u0633\u0645 \u0648\u0631\u0642\u0629 \u0627\u0644\u062a\u0628\u0648\u064a\u0628 \u0627\u0644\u062a\u064a \u062a\u062d\u062a\u0648\u064a \u0639\u0644\u0649 \u0627\u0644\u0623\u0633\u0639\u0627\u0631"
+    },
+    "reports_spreadsheet_id": {
+      "type": "string",
+      "description": "\u0645\u0639\u0631\u0651\u0641 \u0645\u0644\u0641 \u062c\u0648\u062c\u0644 \u0634\u064a\u062a \u0644\u062a\u0635\u062f\u064a\u0631 \u0627\u0644\u062a\u0642\u0627\u0631\u064a\u0631"
+    },
+    "reports_sheet_name": {
+      "type": "string",
+      "default": "\u0627\u0644\u062a\u0642\u0627\u0631\u064a\u0631",
+      "description": "\u0627\u0633\u0645 \u0648\u0631\u0642\u0629 \u0627\u0644\u062a\u0628\u0648\u064a\u0628 \u0644\u062a\u0635\u062f\u064a\u0631 \u0627\u0644\u062a\u0642\u0627\u0631\u064a\u0631"
+    },
+    "auto_sync_enabled": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "prices_spreadsheet_id",
+    "reports_spreadsheet_id"
+  ]
+}

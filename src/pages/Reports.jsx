@@ -5,6 +5,7 @@ import {
   FileSpreadsheet,
   Search,
   TrendingUp,
+  UploadCloud,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -29,12 +30,33 @@ import {
   Legend,
 } from "recharts";
 import { formatCurrency } from "@/lib/constants";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Reports() {
+  const { toast } = useToast();
   const [calcs, setCalcs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [productFilter, setProductFilter] = useState("all");
+  const [exporting, setExporting] = useState(false);
+
+  const exportToSheets = async () => {
+    setExporting(true);
+    try {
+      const res = await base44.functions.invoke("exportCostReports", {});
+      toast({
+        title: `تم تصدير ${res.data.exported} سجل إلى جوجل شيتس`,
+      });
+    } catch (e) {
+      toast({
+        title: "فشل التصدير",
+        description: e.response?.data?.error || e.message,
+        variant: "destructive",
+      });
+    } finally {
+      setExporting(false);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -115,6 +137,10 @@ export default function Reports() {
           </Select>
         </div>
         <div className="flex gap-2">
+          <Button variant="default" size="sm" onClick={exportToSheets} disabled={exporting}>
+            <UploadCloud className={`ml-1 h-4 w-4 ${exporting ? "animate-spin" : ""}`} />
+            {exporting ? "جارٍ..." : "تصدير لجوجل شيتس"}
+          </Button>
           <Button variant="outline" size="sm" onClick={exportCSV}>
             <FileSpreadsheet className="ml-1 h-4 w-4" /> Excel
           </Button>

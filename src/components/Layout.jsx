@@ -9,6 +9,7 @@ import {
   Calculator,
   KanbanSquare,
   FileBarChart,
+  Sheet,
   Moon,
   Sun,
   Menu,
@@ -28,6 +29,7 @@ const navItems = [
   { to: "/calculator", label: "حاسبة التكلفة", icon: Calculator, action: "read" },
   { to: "/kanban", label: "طلبات الإنتاج", icon: KanbanSquare, action: "read" },
   { to: "/reports", label: "التقارير", icon: FileBarChart, action: "read" },
+  { to: "/sheets-settings", label: "إعدادات جوجل شيتس", icon: Sheet, action: "read" },
 ];
 
 export default function Layout() {

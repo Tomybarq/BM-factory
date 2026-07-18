@@ -20,6 +20,7 @@ import Products from '@/pages/Products';
 import CostCalculator from '@/pages/CostCalculator';
 import ProductionKanban from '@/pages/ProductionKanban';
 import Reports from '@/pages/Reports';
+import GoogleSheetsSettings from '@/pages/GoogleSheetsSettings';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -61,6 +62,7 @@ const AuthenticatedApp = () => {
           <Route path="/calculator" element={<CostCalculator />} />
           <Route path="/kanban" element={<ProductionKanban />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="/sheets-settings" element={<GoogleSheetsSettings />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

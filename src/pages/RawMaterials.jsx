@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Plus, Search, Pencil, Trash2, Boxes, History } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Boxes, History, RefreshCw } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import {
   Card,
@@ -41,8 +41,26 @@ export default function RawMaterials() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [historyItem, setHistoryItem] = useState(null);
+  const [syncing, setSyncing] = useState(false);
   const { role } = useCurrentUser();
   const { toast } = useToast();
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const res = await base44.functions.invoke("syncMaterialPrices", {});
+      toast({ title: `تم تحديث ${res.data.updated} مادة من جوجل شيتس` });
+      load();
+    } catch (e) {
+      toast({
+        title: "فشلت المزامنة",
+        description: e.response?.data?.error || e.message,
+        variant: "destructive",
+      });
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -153,12 +171,20 @@ export default function RawMaterials() {
             </SelectContent>
           </Select>
         </div>
-        {can(role, "create") && (
-          <Button onClick={openAdd} className="shrink-0">
-            <Plus className="ml-1 h-4 w-4" />
-            إضافة مادة
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {role === "admin" && (
+            <Button variant="outline" onClick={handleSync} disabled={syncing}>
+              <RefreshCw className={`ml-1 h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
+              {syncing ? "جارٍ المزامنة..." : "مزامنة من جوجل شيتس"}
+            </Button>
+          )}
+          {can(role, "create") && (
+            <Button onClick={openAdd} className="shrink-0">
+              <Plus className="ml-1 h-4 w-4" />
+              إضافة مادة
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Table */}
