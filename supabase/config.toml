@@ -1,0 +1,7 @@
+project_id = "unaqyacypzsxgjmsilmh"
+
+[functions.sync-material-prices]
+verify_jwt = false
+
+[functions.export-cost-reports]
+verify_jwt = false
