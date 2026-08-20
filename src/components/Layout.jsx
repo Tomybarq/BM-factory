@@ -13,7 +13,6 @@ import {
   Moon,
   Sun,
   Menu,
-  X,
   Factory,
 } from "lucide-react";
 import { useCurrentUser } from "@/lib/useCurrentUser";

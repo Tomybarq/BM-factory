@@ -45,7 +45,7 @@ export default function Reports() {
     try {
       const res = await base44.functions.invoke("exportCostReports", {});
       toast({
-        title: `تم تصدير ${res.data.exported} سجل إلى جوجل شيتس`,
+        title: `تم تصدير ${res.exported} سجل إلى جوجل شيتس`,
       });
     } catch (e) {
       toast({

@@ -1,29 +1,54 @@
-import { supabase } from './supabaseClient';
+import { supabase } from '@/api/supabaseClient';
+
+const getUserProfile = async (authUser) => {
+  if (!authUser) return null;
+
+  const { data: profileById, error: idError } = await supabase
+    .from('User')
+    .select('*')
+    .eq('id', authUser.id)
+    .maybeSingle();
+
+  if (idError) throw idError;
+  if (profileById) return profileById;
+
+  if (!authUser.email) return null;
+
+  const { data: profileByEmail, error: emailError } = await supabase
+    .from('User')
+    .select('*')
+    .eq('email', authUser.email)
+    .maybeSingle();
+
+  if (emailError) throw emailError;
+  return profileByEmail;
+};
 
 const createEntityAdapter = (tableName) => {
   return {
-    list: async (orderBy = '') => {
+    list: async (orderBy = '', limit) => {
       let query = supabase.from(tableName).select('*');
       if (orderBy) {
         const isDescending = orderBy.startsWith('-');
         const column = isDescending ? orderBy.substring(1) : orderBy;
         query = query.order(column, { ascending: !isDescending });
       }
+      if (Number.isFinite(limit)) {
+        query = query.limit(limit);
+      }
       const { data, error } = await query;
       if (error) {
         console.error(`Error listing ${tableName}:`, error);
         throw error;
       }
-      return data;
+      return data || [];
     },
     create: async (payload) => {
-      // Remove id if it's undefined or null so Postgres can generate it
-      if (payload && payload.id === undefined) {
-        delete payload.id;
-      }
+      const record = { ...(payload || {}) };
+      if (record.id == null) delete record.id;
       const { data, error } = await supabase
         .from(tableName)
-        .insert(payload)
+        .insert(record)
         .select()
         .single();
       if (error) {
@@ -33,12 +58,12 @@ const createEntityAdapter = (tableName) => {
       return data;
     },
     bulkCreate: async (records) => {
-      const formattedRecords = records.map(r => {
-        if (r && r.id === undefined) {
-          const { id, ...rest } = r;
+      const formattedRecords = records.map((record) => {
+        if (record?.id == null) {
+          const { id: _id, ...rest } = record;
           return rest;
         }
-        return r;
+        return record;
       });
       const { data, error } = await supabase
         .from(tableName)
@@ -48,7 +73,7 @@ const createEntityAdapter = (tableName) => {
         console.error(`Error bulkCreating ${tableName}:`, error);
         throw error;
       }
-      return data;
+      return data || [];
     },
     update: async (id, payload) => {
       const { data, error } = await supabase
@@ -73,11 +98,65 @@ const createEntityAdapter = (tableName) => {
         throw error;
       }
       return true;
-    }
+    },
   };
 };
 
+const auth = {
+  me: async () => {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error && error.name !== 'AuthSessionMissingError') throw error;
+    if (!user) return null;
+
+    const profile = await getUserProfile(user);
+    return profile ? { ...user, ...profile } : user;
+  },
+  register: async ({ email, password }) => {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) throw error;
+    return data;
+  },
+  verifyOtp: async ({ email, otpCode }) => {
+    const { data, error } = await supabase.auth.verifyOtp({
+      email,
+      token: otpCode,
+      type: 'signup',
+    });
+    if (error) throw error;
+    return data.session || data;
+  },
+  setToken: () => undefined,
+  resendOtp: async (email) => {
+    const { data, error } = await supabase.auth.resend({ type: 'signup', email });
+    if (error) throw error;
+    return data;
+  },
+  loginWithProvider: async (provider, redirectPath = '/') => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}${redirectPath}`,
+      },
+    });
+    if (error) throw error;
+    return data;
+  },
+  resetPasswordRequest: async (email) => {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) throw error;
+    return data;
+  },
+  resetPassword: async ({ newPassword }) => {
+    const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+    return data;
+  },
+};
+
 export const base44 = {
+  auth,
   entities: {
     User: createEntityAdapter('User'),
     RawMaterial: createEntityAdapter('RawMaterial'),
@@ -87,20 +166,18 @@ export const base44 = {
     ManualCost: createEntityAdapter('ManualCost'),
     Calculation: createEntityAdapter('Calculation'),
     ProductionOrder: createEntityAdapter('ProductionOrder'),
-    GoogleSheetsConfig: createEntityAdapter('GoogleSheetsConfig')
+    GoogleSheetsConfig: createEntityAdapter('GoogleSheetsConfig'),
   },
   functions: {
-    invoke: async (functionName, args) => {
-      console.log(`Invoking function ${functionName} with args:`, args);
-      // Under the hood, this will invoke Supabase Edge Functions
+    invoke: async (functionName, args = {}) => {
       const { data, error } = await supabase.functions.invoke(functionName, {
-        body: args
+        body: args,
       });
       if (error) {
         console.error(`Failed to invoke function ${functionName}:`, error);
         throw error;
       }
       return data;
-    }
-  }
+    },
+  },
 };

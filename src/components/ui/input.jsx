@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/** @param {{ className?: string, type?: string, [key: string]: any }} props */
 const Input = React.forwardRef(({ className, type, ...props }, ref) => {
   return (
     (<input

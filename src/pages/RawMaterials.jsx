@@ -4,8 +4,6 @@ import { Plus, Search, Pencil, Trash2, Boxes, History, RefreshCw } from "lucide-
 import { base44 } from "@/api/base44Client";
 import {
   Card,
-  CardHeader,
-  CardTitle,
   CardContent,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
