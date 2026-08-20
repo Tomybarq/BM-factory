@@ -40,7 +40,7 @@ jobs:
         run: npm run typecheck
 
       - name: Run tests with coverage
-        run: npm run test:coverage -- --reporter=dot
+        run: npm run test:coverage -- --reporter=dot --reporter=json --outputFile.json=test-results.json
 
       - name: Build production bundle
         run: npm run build
@@ -69,6 +69,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report-node-${{ github.run_number }}
-          path: coverage
+          path: |
+            coverage
+            test-results.json
           if-no-files-found: ignore
           retention-days: 14
