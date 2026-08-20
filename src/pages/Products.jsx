@@ -6,7 +6,6 @@ import {
   Trash2,
   FlaskConical,
   Copy,
-  ChevronLeft,
   Save,
   X,
 } from "lucide-react";
