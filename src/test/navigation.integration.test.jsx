@@ -139,6 +139,34 @@ describe('application navigation', () => {
     expect(screen.getByTestId('layout')).toBeInTheDocument();
   });
 
+  it.each([
+    ['auth', 'isLoadingAuth'],
+    ['public settings', 'isLoadingPublicSettings'],
+  ])('shows the loading state while %s is loading', (_label, stateKey) => {
+    authState[stateKey] = true;
+
+    render(<App />);
+
+    expect(document.querySelector('.animate-spin')).toBeInTheDocument();
+  });
+
+  it('renders the not-registered error screen from the app-level auth error', () => {
+    authState.authError = { type: 'user_not_registered' };
+
+    render(<App />);
+
+    expect(screen.getByText('User not registered')).toBeInTheDocument();
+  });
+
+  it('requests login when the app-level auth error requires authentication', () => {
+    authState.authError = { type: 'auth_required' };
+
+    render(<App />);
+
+    expect(authState.navigateToLogin).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText('Login page')).not.toBeInTheDocument();
+  });
+
   it('renders the not-found route for unknown locations', () => {
     visit('/does-not-exist');
 

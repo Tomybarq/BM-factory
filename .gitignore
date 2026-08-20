@@ -33,3 +33,6 @@ base44/.app.jsonc
 
 # Local isolated worktrees
 .worktrees/
+
+# Test coverage output
+coverage/

@@ -9,6 +9,12 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/test/setup.js',
     include: ['./src/test/**/*.{test,spec}.{js,jsx}'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json-summary', 'html', 'lcov'],
+      reportsDirectory: './coverage',
+      exclude: ['src/test/**', '**/*.d.ts'],
+    },
   },
   plugins: [
     base44({
